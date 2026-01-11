@@ -21,6 +21,7 @@ export function createHandSystem({
   let leftFist = false;
   let leftPinch = false;
   let leftPalmWorld = { x: 0, y: 0 };
+  let leftPalmDepth = null;
   let rightIndexWorld = null;
   let rightPalmWorld = null;
 
@@ -40,6 +41,7 @@ export function createHandSystem({
     leftPinch: false,
     leftBurst: false,
     leftPalmWorld: { x: 0, y: 0 },
+    leftPalmDepth: null,
     rightIndexWorld: null,
     rightPalmWorld: null,
     leftConfig: null,
@@ -233,6 +235,8 @@ export function createHandSystem({
       if (rawLeftFist) {
         rawLeftFingers = 0;
       }
+      leftPalmDepth =
+        (leftHand[0].z + leftHand[5].z + leftHand[9].z + leftHand[13].z + leftHand[17].z) / 5;
       leftPalmWorld = screenToWorld(
         (leftHand[0].x + leftHand[5].x + leftHand[9].x + leftHand[13].x + leftHand[17].x) / 5,
         (leftHand[0].y + leftHand[5].y + leftHand[9].y + leftHand[13].y + leftHand[17].y) / 5
@@ -248,6 +252,7 @@ export function createHandSystem({
       leftPinch = false;
       leftOpenCandidate = { active: false, count: stableFrames };
       leftOpen = false;
+      leftPalmDepth = null;
     }
 
     if (rightHand) {
@@ -335,6 +340,7 @@ export function createHandSystem({
     handState.leftPinch = leftPinch;
     handState.leftBurst = leftBurst;
     handState.leftPalmWorld = leftPalmWorld;
+    handState.leftPalmDepth = leftPalmDepth;
     handState.rightIndexWorld = rightIndexWorld;
     handState.rightPalmWorld = rightPalmWorld;
     handState.leftConfig = leftConfig;
