@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Cyberpunk Particle Interaction</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./assets/cyberpunk-particle/styles.css" />
+</head>
+<body>
+  <video id="camera-feed" autoplay muted playsinline></video>
+  <canvas id="camera-canvas"></canvas>
+  <div id="hud">
+    <div class="corner tl">
+      <div class="label">FPS</div>
+      <div class="value" id="hud-fps">0</div>
+    </div>
+    <div class="corner tr">
+      <div class="label">Particles</div>
+      <div class="value" id="hud-count">12000</div>
+    </div>
+    <div class="corner bl">
+      <div class="label">Left</div>
+      <div class="value" id="hud-left">NO HAND</div>
+    </div>
+    <div class="corner br">
+      <div class="label">Right</div>
+      <div class="value" id="hud-right">NO HAND</div>
+    </div>
+  </div>
+  <div id="title">CYBERPUNK PARTICLE INTERFACE</div>
+  <div id="grid"></div>
+  <div id="scanlines"></div>
+  <div id="flash"></div>
+  <div id="vignette"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <script type="module" src="./assets/cyberpunk-particle/main.js"></script>
+</body>
+</html>

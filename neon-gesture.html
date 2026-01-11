@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neon Gesture Flux</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              abyss: "#070912",
+              glow: "#5ef6ff",
+              ember: "#ff7b47",
+              reactor: "#7cff64",
+              violet: "#7c5cff",
+              ok: "#ffd166",
+              love: "#ff6fb3",
+            },
+            fontFamily: {
+              orbitron: ["Orbitron", "ui-sans-serif", "system-ui"],
+              mono: ["Share Tech Mono", "Noto Sans SC", "ui-monospace", "SFMono-Regular"],
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Share+Tech+Mono&family=Noto+Sans+SC:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./assets/neon-gesture-flux/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  </head>
+  <body class="relative bg-abyss">
+    <div id="scene" class="fixed inset-0 z-0"></div>
+    <canvas id="hand-canvas" class="pointer-events-none opacity-30 z-10"></canvas>
+
+    <div class="fixed inset-0 pointer-events-none z-20">
+      <div class="absolute inset-0 scanlines"></div>
+      <div class="absolute inset-0 holo-grid"></div>
+      <div class="absolute inset-0 glow-splash"></div>
+    </div>
+
+    <div class="fixed inset-0 pointer-events-none z-30">
+      <div id="halo" class="absolute left-1/2 top-1/2">
+        <div class="pulse-ring"></div>
+        <div class="halo-core"></div>
+      </div>
+    </div>
+
+    <div class="fixed inset-0 pointer-events-none z-25 frame-lines">
+      <span class="tl-h"></span>
+      <span class="tl-v"></span>
+      <span class="tr-h"></span>
+      <span class="tr-v"></span>
+      <span class="bl-h"></span>
+      <span class="bl-v"></span>
+      <span class="br-h"></span>
+      <span class="br-v"></span>
+    </div>
+
+    <div class="fixed inset-0 z-40 pointer-events-none px-6 py-6 lg:px-10 lg:py-8 opacity-0">
+      <div class="flex h-full flex-col justify-between gap-6">
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+          <div class="panel pointer-events-auto max-w-lg">
+            <div class="flex items-center justify-between gap-4">
+              <span class="hud-chip">Gesture Flux</span>
+              <span class="panel-sub">Quantum Core</span>
+            </div>
+            <p class="mt-4 text-sm text-slate-200">
+              Particle swarm bends to your hand energy, audio resonance, and AR field. Pinch, OK, love, open, or clench
+              to shape the flux.
+            </p>
+            <div class="stat-grid">
+              <div class="stat-line">
+                <span>Gesture</span>
+                <span data-gesture class="text-glow">SEARCH</span>
+              </div>
+              <div class="stat-line">
+                <span>Hands</span>
+                <span data-hands class="text-slate-200">0</span>
+              </div>
+              <div class="stat-line">
+                <span>Vision</span>
+                <span data-vision class="text-slate-200">standby</span>
+              </div>
+              <div class="stat-line">
+                <span>Audio</span>
+                <span data-sound class="text-slate-200">off</span>
+              </div>
+              <div class="stat-line">
+                <span>AR</span>
+                <span data-ar class="text-slate-200">standby</span>
+              </div>
+            </div>
+            <div class="mt-4">
+              <div class="panel-sub">Signal Flux</div>
+              <div class="signal-track">
+                <div data-signal class="signal-fill" style="transform: scaleX(0.35);"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-4 lg:items-end opacity-0">
+            <div class="panel pointer-events-auto max-w-xs">
+              <div class="panel-title">Neural Field</div>
+              <div class="mt-3 flex items-center gap-3 text-xs text-slate-200">
+                <span class="glyph-chip">SYNCED</span>
+                <span class="panel-sub">Latency 14ms</span>
+              </div>
+              <p class="mt-3 text-xs text-slate-300">
+                Ambient scanlock is stable. Your hand becomes the gravity axis.
+              </p>
+            </div>
+
+            <div class="panel pointer-events-auto max-w-xs">
+              <div class="panel-title">Control Deck</div>
+              <div class="mt-4 flex flex-wrap gap-3">
+                <button id="visionToggle" class="hud-btn">Activate Vision</button>
+                <button id="soundToggle" class="hud-btn hud-btn--violet">Sound Off</button>
+              </div>
+              <div id="ar-slot" class="mt-3 flex flex-wrap gap-3"></div>
+              <p class="mt-3 text-xs text-slate-300">
+                Pinch to compress, OK for ring lock, love for heart bloom, open to expand, fist for vortex flare.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div class="panel pointer-events-auto max-w-sm opacity-0">
+            <div class="panel-title">Gesture Map</div>
+            <div class="mt-4 grid gap-3 text-xs text-slate-200">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Open Palm</span>
+                <span class="text-reactor">Bloom + Drift</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Pinch</span>
+                <span class="text-ember">Compression + Snap</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">OK</span>
+                <span class="text-ok">Harmonic Ring</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Love</span>
+                <span class="text-love">Heart Bloom</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Fist</span>
+                <span class="text-violet">Vortex + Repulse</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Flow</span>
+                <span class="text-glow">Ambient Drift</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel pointer-events-auto max-w-sm opacity-0">
+            <div class="panel-title">Particle Glyphs</div>
+            <p class="mt-3 text-xs text-slate-200">
+              Glyphs crystallize from the swarm near your hand. Current:
+              <span data-glyph class="text-glow">侦测</span>
+            </p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <span class="glyph-chip text-reactor">绽放</span>
+              <span class="glyph-chip text-ember">凝聚</span>
+              <span class="glyph-chip text-ok">确认</span>
+              <span class="glyph-chip text-love">我爱你</span>
+              <span class="glyph-chip text-violet">涡旋</span>
+              <span class="glyph-chip text-glow">流动</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <video id="input-video" class="hidden" playsinline></video>
+
+    <script type="module" src="./assets/neon-gesture-flux/main.js"></script>
+  </body>
+</html>
